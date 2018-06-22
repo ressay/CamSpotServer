@@ -1,5 +1,6 @@
 package VideoUtils;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -26,4 +27,11 @@ public class BasicFrameSequence extends FrameSequence
     {
         return sequence;
     }
+    public void VideoDefault ()
+    {
+
+
+    }
+
+
 }

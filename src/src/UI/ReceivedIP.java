@@ -14,6 +14,10 @@ public class ReceivedIP
     FrameSequence sequence;
     String ipAddress;
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
     public ReceivedIP(FrameSequence sequence, String ipAddress)
     {
         this.sequence = sequence;
@@ -25,3 +29,5 @@ public class ReceivedIP
         return sequence.getFrames();
     }
 }
+
+

@@ -11,4 +11,8 @@ public class Frame
     {
         this.frameUrl = frameUrl;
     }
+
+    public String getFrameUrl() {
+        return frameUrl;
+    }
 }
