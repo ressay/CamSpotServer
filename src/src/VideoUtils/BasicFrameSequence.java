@@ -1,5 +1,7 @@
 package VideoUtils;
 
+import javafx.scene.image.Image;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,10 +29,19 @@ public class BasicFrameSequence extends FrameSequence
     {
         return sequence;
     }
-    public void VideoDefault ()
+    public ArrayList<Image>  GetImages ()
     {
+      ArrayList<Image> SetI=new ArrayList<>();
+
+        for(int i=0;i< this.getFrames().size();i++)
+        {
+
+            SetI.add(this.getFrames().get(i).getFrameImage());
 
 
+        }
+
+        return SetI;
     }
 
 

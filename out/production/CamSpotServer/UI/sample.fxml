@@ -89,12 +89,12 @@
                                                    <children>
                                                                         <ButtonBar layoutX="114.0" layoutY="194.0" prefHeight="38.0" prefWidth="198.0">
                                                          <buttons>
-                                                                                <Button fx:id="video_stop" mnemonicParsing="false" text="Stop">
+                                                                                <Button fx:id="video_stop" mnemonicParsing="false" onAction="#ButtonStop" text="Stop">
                                                                <font>
                                                                   <Font name="DejaVu Sans Condensed Bold" size="13.0" />
                                                                </font>
                                                             </Button>
-                                                                                <Button fx:id="video_start" mnemonicParsing="false" text="Start">
+                                                                                <Button fx:id="video_start" mnemonicParsing="false" onAction="#ButtonStart" text="Start">
                                                                <font>
                                                                   <Font name="DejaVu Sans Condensed Bold" size="13.0" />
                                                                </font>

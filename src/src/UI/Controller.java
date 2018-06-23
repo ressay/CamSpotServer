@@ -47,7 +47,11 @@ public class Controller {
 
     protected SetOfReceivedIP DataBase_IPadrress;
 
-    List<Image> setimage = new LinkedList<>();
+    /* for any example */
+
+
+    Timeline timeline;
+    List<Image> setimage ;
     Iterator<Image> imageIterator;
     @FXML
     private ResourceBundle resources;
@@ -59,7 +63,7 @@ public class Controller {
     private ListView<ReceivedIP> IP_Address_List;
 
     @FXML
-    private ListView<?> anomaly_description;
+    private ListView<Anomaly> anomaly_description;
 
     @FXML
     private Button video_stop;
@@ -81,6 +85,7 @@ public class Controller {
         /* set the example as default*/
 
         try {
+            centerImage();
             Example_set();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -114,9 +119,6 @@ public class Controller {
         this.DataBase_IPadrress=new SetOfReceivedIP();
         this.DataBase_IPadrress.add(receivedIP);
 
-        /* i choose to display the ip address only */
-
-       // IP_Address_List.getItems().add(receivedIP.getIpAddress());
 
          IP_Address_List.getItems().add(receivedIP);
 
@@ -133,6 +135,10 @@ public class Controller {
 
     public void Display_Frame (){
     /* getting the selected ip address */
+
+
+    centerImage();
+
     ReceivedIP ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
 
         JOptionPane.showMessageDialog (
@@ -145,45 +151,38 @@ public class Controller {
 
  /* putting image into a list and convert it to IMAGE*/
 
-        try {
-            for (int i=0; i<ipR.getFrames().size(); i++) {
-
-                System.out.println("sequence:"+i);
-               // frame.setImage(new Image(new FileInputStream(IpFrames.get(i).getFrameUrl())));
-                setimage.add(new Image(new FileInputStream(
-                        ipR.getFrames().get(i).getFrameUrl())));
 
 
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-
+         setimage = ipR.GetImages();
         /* displaying image one by one */
         Collections.shuffle(setimage);
         imageIterator = setimage.iterator();
 
-        Timeline timeline = new Timeline(
+         timeline = new Timeline(
                 new KeyFrame(
                         Duration.ZERO,
                         e -> {
+                            centerImage();
+
+                            if(imageIterator.hasNext())
                             frame.setImage(imageIterator.next());
-                            System.out.println(
-                                    "Displaying " + frame.getImage().impl_getUrl()
-                            );
+
                         }
                 ),
                 new KeyFrame(Duration.seconds(1))
         );
         timeline.setCycleCount(setimage.size());
-        timeline.setOnFinished(event -> {
+        /*this part enable a looping on the same sequence of images ,"we don't need it now"*/
+     /*   timeline.setOnFinished(event -> {
             Collections.shuffle(setimage);
             imageIterator = setimage.iterator();
             timeline.playFromStart();
         });
+       */
         timeline.play();
 
+
+     this.anomaly_description.getItems().add(new Anomaly("",""));
 
 
     }
@@ -191,5 +190,49 @@ public class Controller {
 
 
 
+    public void centerImage() {
+        Image img = frame.getImage();
+        if (img != null) {
+            double w = 0;
+            double h = 0;
+
+            double ratioX = frame.getFitWidth() / img.getWidth();
+            double ratioY = frame.getFitHeight() / img.getHeight();
+
+            double reducCoeff = 0;
+            if(ratioX >= ratioY) {
+                reducCoeff = ratioY;
+            } else {
+                reducCoeff = ratioX;
+            }
+
+            w = img.getWidth() * reducCoeff;
+            h = img.getHeight() * reducCoeff;
+
+            frame.setX((frame.getFitWidth() - w) / 2);
+            frame.setY((frame.getFitHeight() - h) / 2);
+
+        }
+    }
+
+
+    public void ButtonStart ()
+    {
+
+     if(timeline!=null)
+         if(imageIterator.hasNext())
+         timeline.play();
+
+    }
+
+
+    public void ButtonStop()
+    {
+
+        if(timeline!=null)
+            timeline.stop();
+
+
+    }
 
 }
