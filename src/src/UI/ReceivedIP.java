@@ -28,6 +28,9 @@ public class ReceivedIP
     {
         return sequence.getFrames();
     }
+    public String toString() {
+        return this.getIpAddress();
+    }
 }
 
 

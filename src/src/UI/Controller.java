@@ -56,7 +56,7 @@ public class Controller {
     private URL location;
 
     @FXML
-    private ListView<String> IP_Address_List;
+    private ListView<ReceivedIP> IP_Address_List;
 
     @FXML
     private ListView<?> anomaly_description;
@@ -115,11 +115,12 @@ public class Controller {
         this.DataBase_IPadrress.add(receivedIP);
 
         /* i choose to display the ip address only */
-        IP_Address_List.getItems().add(receivedIP.getIpAddress());
 
-//        ImageView iv = new ImageView(getClass().getResource("").toExternalForm());
+       // IP_Address_List.getItems().add(receivedIP.getIpAddress());
 
-        /*change the path my relative path doesnt work (choose any picture) */
+         IP_Address_List.getItems().add(receivedIP);
+
+   /*change the path my relative path doesnt work (choose any picture) */
 
 
         frame.setImage(new Image(new FileInputStream(
@@ -132,42 +133,25 @@ public class Controller {
 
     public void Display_Frame (){
     /* getting the selected ip address */
-    String ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
+    ReceivedIP ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
 
         JOptionPane.showMessageDialog (
                 null, "the IPAddress:"+ipR+" Has been Selected");
     System.out.println("IP selected");
 
-    /* find the frames related to it in DATABASE_IPADRESS */
 
 
-    ReceivedIP foundIp=DataBase_IPadrress.Look_up_Frame(ipR);
-
-
-    /* looking for its frames */
-
-    ArrayList<Frame> IpFrames=foundIp.getFrames();
-
-
-    /* display the frames on the ImageView*/
-
-
-
-    /*WORKING IN PROGRESS HERE*/
-
-
-    /*displaying the first image*/
 
 
  /* putting image into a list and convert it to IMAGE*/
 
         try {
-            for (int i=0; i<3; i++) {
+            for (int i=0; i<ipR.getFrames().size(); i++) {
 
                 System.out.println("sequence:"+i);
                // frame.setImage(new Image(new FileInputStream(IpFrames.get(i).getFrameUrl())));
                 setimage.add(new Image(new FileInputStream(
-                        IpFrames.get(i).getFrameUrl())));
+                        ipR.getFrames().get(i).getFrameUrl())));
 
 
             }
