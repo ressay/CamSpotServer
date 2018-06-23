@@ -3,6 +3,8 @@ package UI;
 import VideoUtils.BasicFrameSequence;
 import VideoUtils.Frame;
 import com.sun.org.apache.regexp.internal.RE;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -10,15 +12,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
@@ -45,7 +47,8 @@ public class Controller {
 
     protected SetOfReceivedIP DataBase_IPadrress;
 
-
+    List<Image> setimage = new LinkedList<>();
+    Iterator<Image> imageIterator;
     @FXML
     private ResourceBundle resources;
 
@@ -88,19 +91,19 @@ public class Controller {
     public void Example_set() throws FileNotFoundException {
         /*image sequence*/
 
-    /*    BasicFrameSequence sequence = new BasicFrameSequence(
+       BasicFrameSequence sequence = new BasicFrameSequence(
             new Frame("/home/masterubunto/Pictures/screen1.jpg"),
             new Frame("/home/masterubunto/Pictures/screen2.jpg"),
             new Frame("/home/masterubunto/Pictures/screen3.jpg")
     );
-*/
 
-    /* put the full path if it doesnt work*/
+
+    /* put the full path if it doesnt work
         BasicFrameSequence sequence = new BasicFrameSequence(
                 new Frame("../VideoUtils/screen1.jpg"),
                 new Frame("../VideoUtils/screen2.jpg"),
                 new Frame("../VideoUtils/screen3.jpg")
-        );
+        );*/
 
 
 
@@ -156,23 +159,47 @@ public class Controller {
     /*displaying the first image*/
 
 
- /* its not working had el part */
+ /* putting image into a list and convert it to IMAGE*/
+
         try {
             for (int i=0; i<3; i++) {
 
-
-                sleep(1000);
                 System.out.println("sequence:"+i);
-                frame.setImage(new Image(new FileInputStream(
+               // frame.setImage(new Image(new FileInputStream(IpFrames.get(i).getFrameUrl())));
+                setimage.add(new Image(new FileInputStream(
                         IpFrames.get(i).getFrameUrl())));
 
 
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+
+
+        /* displaying image one by one */
+        Collections.shuffle(setimage);
+        imageIterator = setimage.iterator();
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        e -> {
+                            frame.setImage(imageIterator.next());
+                            System.out.println(
+                                    "Displaying " + frame.getImage().impl_getUrl()
+                            );
+                        }
+                ),
+                new KeyFrame(Duration.seconds(1))
+        );
+        timeline.setCycleCount(setimage.size());
+        timeline.setOnFinished(event -> {
+            Collections.shuffle(setimage);
+            imageIterator = setimage.iterator();
+            timeline.playFromStart();
+        });
+        timeline.play();
+
 
 
     }
