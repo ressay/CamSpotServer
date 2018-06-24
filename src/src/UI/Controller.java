@@ -3,6 +3,8 @@ package UI;
 import VideoUtils.BasicFrameSequence;
 import VideoUtils.Frame;
 import com.sun.org.apache.regexp.internal.RE;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -10,15 +12,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
@@ -45,7 +47,12 @@ public class Controller {
 
     protected SetOfReceivedIP DataBase_IPadrress;
 
+    /* for any example */
 
+
+    Timeline timeline;
+    List<Image> setimage ;
+    Iterator<Image> imageIterator;
     @FXML
     private ResourceBundle resources;
 
@@ -53,10 +60,10 @@ public class Controller {
     private URL location;
 
     @FXML
-    private ListView<String> IP_Address_List;
+    private ListView<ReceivedIP> IP_Address_List;
 
     @FXML
-    private ListView<?> anomaly_description;
+    private ListView<Anomaly> anomaly_description;
 
     @FXML
     private Button video_stop;
@@ -78,6 +85,7 @@ public class Controller {
         /* set the example as default*/
 
         try {
+            centerImage();
             Example_set();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -88,19 +96,19 @@ public class Controller {
     public void Example_set() throws FileNotFoundException {
         /*image sequence*/
 
-    /*    BasicFrameSequence sequence = new BasicFrameSequence(
+       BasicFrameSequence sequence = new BasicFrameSequence(
             new Frame("/home/masterubunto/Pictures/screen1.jpg"),
             new Frame("/home/masterubunto/Pictures/screen2.jpg"),
             new Frame("/home/masterubunto/Pictures/screen3.jpg")
     );
-*/
 
-    /* put the full path if it doesnt work*/
+
+    /* put the full path if it doesnt work
         BasicFrameSequence sequence = new BasicFrameSequence(
                 new Frame("../VideoUtils/screen1.jpg"),
                 new Frame("../VideoUtils/screen2.jpg"),
                 new Frame("../VideoUtils/screen3.jpg")
-        );
+        );*/
 
 
 
@@ -111,12 +119,10 @@ public class Controller {
         this.DataBase_IPadrress=new SetOfReceivedIP();
         this.DataBase_IPadrress.add(receivedIP);
 
-        /* i choose to display the ip address only */
-        IP_Address_List.getItems().add(receivedIP.getIpAddress());
 
-//        ImageView iv = new ImageView(getClass().getResource("").toExternalForm());
+         IP_Address_List.getItems().add(receivedIP);
 
-        /*change the path my relative path doesnt work (choose any picture) */
+   /*change the path my relative path doesnt work (choose any picture) */
 
 
         frame.setImage(new Image(new FileInputStream(
@@ -129,50 +135,54 @@ public class Controller {
 
     public void Display_Frame (){
     /* getting the selected ip address */
-    String ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
+
+
+    centerImage();
+
+    ReceivedIP ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
 
         JOptionPane.showMessageDialog (
                 null, "the IPAddress:"+ipR+" Has been Selected");
     System.out.println("IP selected");
 
-    /* find the frames related to it in DATABASE_IPADRESS */
-
-
-    ReceivedIP foundIp=DataBase_IPadrress.Look_up_Frame(ipR);
-
-
-    /* looking for its frames */
-
-    ArrayList<Frame> IpFrames=foundIp.getFrames();
-
-
-    /* display the frames on the ImageView*/
 
 
 
-    /*WORKING IN PROGRESS HERE*/
+
+ /* putting image into a list and convert it to IMAGE*/
 
 
-    /*displaying the first image*/
+
+         setimage = ipR.GetImages();
+        /* displaying image one by one */
+        Collections.shuffle(setimage);
+        imageIterator = setimage.iterator();
+
+         timeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        e -> {
+                            centerImage();
+
+                            if(imageIterator.hasNext())
+                            frame.setImage(imageIterator.next());
+
+                        }
+                ),
+                new KeyFrame(Duration.seconds(1))
+        );
+        timeline.setCycleCount(setimage.size());
+        /*this part enable a looping on the same sequence of images ,"we don't need it now"*/
+     /*   timeline.setOnFinished(event -> {
+            Collections.shuffle(setimage);
+            imageIterator = setimage.iterator();
+            timeline.playFromStart();
+        });
+       */
+        timeline.play();
 
 
- /* its not working had el part */
-        try {
-            for (int i=0; i<3; i++) {
-
-
-                sleep(1000);
-                System.out.println("sequence:"+i);
-                frame.setImage(new Image(new FileInputStream(
-                        IpFrames.get(i).getFrameUrl())));
-
-
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+     this.anomaly_description.getItems().add(new Anomaly("",""));
 
 
     }
@@ -180,5 +190,49 @@ public class Controller {
 
 
 
+    public void centerImage() {
+        Image img = frame.getImage();
+        if (img != null) {
+            double w = 0;
+            double h = 0;
+
+            double ratioX = frame.getFitWidth() / img.getWidth();
+            double ratioY = frame.getFitHeight() / img.getHeight();
+
+            double reducCoeff = 0;
+            if(ratioX >= ratioY) {
+                reducCoeff = ratioY;
+            } else {
+                reducCoeff = ratioX;
+            }
+
+            w = img.getWidth() * reducCoeff;
+            h = img.getHeight() * reducCoeff;
+
+            frame.setX((frame.getFitWidth() - w) / 2);
+            frame.setY((frame.getFitHeight() - h) / 2);
+
+        }
+    }
+
+
+    public void ButtonStart ()
+    {
+
+     if(timeline!=null)
+         if(imageIterator.hasNext())
+         timeline.play();
+
+    }
+
+
+    public void ButtonStop()
+    {
+
+        if(timeline!=null)
+            timeline.stop();
+
+
+    }
 
 }

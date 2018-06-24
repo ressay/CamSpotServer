@@ -1,7 +1,9 @@
 package UI;
 
+import VideoUtils.BasicFrameSequence;
 import VideoUtils.Frame;
 import VideoUtils.FrameSequence;
+import javafx.scene.image.Image;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -11,14 +13,14 @@ import java.util.ArrayList;
  */
 public class ReceivedIP
 {
-    FrameSequence sequence;
+    BasicFrameSequence sequence;
     String ipAddress;
 
     public String getIpAddress() {
         return ipAddress;
     }
 
-    public ReceivedIP(FrameSequence sequence, String ipAddress)
+    public ReceivedIP(BasicFrameSequence sequence, String ipAddress)
     {
         this.sequence = sequence;
         this.ipAddress = ipAddress;
@@ -27,6 +29,10 @@ public class ReceivedIP
     public ArrayList<Frame> getFrames()
     {
         return sequence.getFrames();
+    }
+    public ArrayList<Image> GetImages()  {return  sequence.GetImages();}
+     public String toString() {
+        return this.getIpAddress();
     }
 }
 
