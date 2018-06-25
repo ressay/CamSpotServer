@@ -97,9 +97,9 @@ public class Controller {
         /*image sequence*/
 
        BasicFrameSequence sequence = new BasicFrameSequence(
-            new Frame("/home/masterubunto/Pictures/screen1.jpg"),
-            new Frame("/home/masterubunto/Pictures/screen2.jpg"),
-            new Frame("/home/masterubunto/Pictures/screen3.jpg")
+            new Frame("/home/ressay/screen1.jpg"),
+            new Frame("/home/ressay/screen2.jpg"),
+            new Frame("/home/ressay/screen3.jpg")
     );
 
 
@@ -126,7 +126,7 @@ public class Controller {
 
 
         frame.setImage(new Image(new FileInputStream(
-                "/home/masterubunto/Pictures/5cm.jpg")));
+                "/home/ressay/5cm.jpg")));
 
 
     }
