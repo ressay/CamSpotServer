@@ -1,7 +1,9 @@
 package Database;
 
+import Database.Tables.ReceivedFrame;
 import Network.NetworkFrame;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -20,6 +22,11 @@ public class DbManager
     public static void addFrame(NetworkFrame frame)
     {
         frame.getFrame().addFrameToDatabase();
+    }
+
+    public static ArrayList<ReceivedFrame> getFramesOfIp(String ip)
+    {
+        return ReceivedFrame.getIPFrames(ip);
     }
 
 
