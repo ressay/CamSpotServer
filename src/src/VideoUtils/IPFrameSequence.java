@@ -12,24 +12,28 @@ import java.util.ArrayList;
 public class IPFrameSequence extends FrameSequence
 {
     private String ip;
-    private long time;
-    private int timeLaps;
-    private int timeLimit;
+    private long from;
+    private long to;
     ArrayList<ReceivedFrame> frames;
 
-    public IPFrameSequence(String ip, long time, int timeLaps,int timeLimit)
+    public IPFrameSequence(String ip, long from, long to)
     {
         this.ip = ip;
-        this.time = time;
-        this.timeLaps = timeLaps;
-        this.timeLimit = timeLimit;
+        this.from = from;
+        this.to = to;
         frames = DbManager.getFramesOfIp(ip);
         generateFrameSequence();
     }
 
     private void generateFrameSequence()
     {
-
+        ArrayList<Frame> videoFrames = new ArrayList<>();
+        for (ReceivedFrame frame : frames)
+        {
+            if(from <= frame.getTimeStamp().getTime()
+                    && frame.getTimeStamp().getTime() <= to)
+            videoFrames.add(new Frame(frame.getFrameUrl()));
+        }
     }
 
     @Override

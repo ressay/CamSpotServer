@@ -13,9 +13,15 @@ public class Frame
     String frameUrl;
     Image frameImage;
 
-    public Frame(String frameUrl) throws FileNotFoundException {
+    public Frame(String frameUrl){
         this.frameUrl = frameUrl;
-        frameImage= new Image(new FileInputStream(this.frameUrl));
+        try
+        {
+            frameImage= new Image(new FileInputStream(this.frameUrl));
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public String getFrameUrl() {
