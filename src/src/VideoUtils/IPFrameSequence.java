@@ -15,10 +15,22 @@ public class IPFrameSequence extends FrameSequence
     private long from;
     private long to;
     ArrayList<ReceivedFrame> frames;
+    ArrayList<Frame> videoFrames = new ArrayList<>();
 
     public IPFrameSequence(String ip, long from, long to)
     {
         this.ip = ip;
+        initFrames(from,to);
+    }
+
+    public IPFrameSequence(String ip, long from)
+    {
+        this.ip = ip;
+        initFrames(from,System.currentTimeMillis());
+    }
+
+    private void initFrames(long from, long to)
+    {
         this.from = from;
         this.to = to;
         frames = DbManager.getFramesOfIp(ip);
@@ -27,7 +39,6 @@ public class IPFrameSequence extends FrameSequence
 
     private void generateFrameSequence()
     {
-        ArrayList<Frame> videoFrames = new ArrayList<>();
         for (ReceivedFrame frame : frames)
         {
             if(from <= frame.getTimeStamp().getTime()
@@ -39,6 +50,6 @@ public class IPFrameSequence extends FrameSequence
     @Override
     public ArrayList<Frame> getFrames()
     {
-        return null;
+        return videoFrames;
     }
 }

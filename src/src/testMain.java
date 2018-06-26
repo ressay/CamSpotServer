@@ -29,11 +29,19 @@ public class testMain
         NetworkFrame frame = new NetworkFrame("/home/ressay/screen4.jpg",
                 "127.0.0.2",1,object.toJSONString());
 //        DbManager.addFrame(frame);
-        ArrayList<ReceivedFrame> frames = ReceivedFrame.getIPFrames("127.0.0.2");
+        ArrayList<ReceivedFrame> frames = ReceivedFrame.getIPFrames("127.0.0.1");
         for(ReceivedFrame f : frames)
         {
             System.out.println(f);
         }
+
+        ArrayList<String> ips = ReceivedFrame.getIpsReceived(System.currentTimeMillis()-1000*3600*9,
+                System.currentTimeMillis());
+        for(String ip : ips)
+        {
+            System.out.println(ip);
+        }
+
 
 //        launch(args);
     }

@@ -107,6 +107,35 @@ public class ReceivedFrame
         }
     }
 
+    static public ArrayList<String> getIpsReceived(long from, long to)
+    {
+        ArrayList<String> ips = new ArrayList<>();
+        Connection connection = DbConnection.getInstance().getConnection();
+        String query = "SELECT DISTINCT INET_NTOA(ipAddress) as ipAd " +
+                "FROM `"+frameReceivedTable+ "` WHERE" +
+                " (Frame_receivedDate >= ? AND Frame_receivedDate <= ?)";
+        System.out.println(query);
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement(query);
+            Timestamp f = new Timestamp(from);
+            Timestamp t = new Timestamp(to);
+            statement.setTimestamp(1,f);
+            statement.setTimestamp(2,t);
+            ResultSet set = statement.executeQuery();
+
+            while (set.next())
+            {
+                String ipAd = set.getString("ipAd");
+                ips.add(ipAd);
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return ips;
+    }
+
 
     static public ArrayList<ReceivedFrame> getIPFrames(String ip)
     {

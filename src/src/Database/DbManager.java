@@ -29,6 +29,11 @@ public class DbManager
         return ReceivedFrame.getIPFrames(ip);
     }
 
+    public static ArrayList<String> getIpAdresses(long from, long to)
+    {
+        return ReceivedFrame.getIpsReceived(from,to);
+    }
+
 
 
 }
