@@ -1,18 +1,28 @@
 package UI;
 
 import VideoUtils.BasicFrameSequence;
+
 import VideoUtils.Frame;
 import com.sun.org.apache.regexp.internal.RE;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebEvent;
+import javafx.scene.web.WebView;
 import javafx.util.Duration;
+import sample.GoogleApp;
 
 
 import javax.swing.*;
@@ -53,6 +63,19 @@ public class Controller {
     Timeline timeline;
     List<Image> setimage ;
     Iterator<Image> imageIterator;
+
+
+    /*map stuff*/
+    GoogleApp.MyBrowser myBrowser;
+    double lat;
+    double lon;
+    int index =0;
+    final TextField latitude = new TextField("" + 35.857908 * 1.00007);
+    final TextField longitude = new TextField("" + 10.598997 * 1.00007);
+    @FXML
+    private Slider frameSlider;
+    @FXML
+    private Tooltip tooltip;
     @FXML
     private ResourceBundle resources;
 
@@ -65,6 +88,8 @@ public class Controller {
     @FXML
     private ListView<Anomaly> anomaly_description;
 
+
+
     @FXML
     private Button video_stop;
 
@@ -72,7 +97,17 @@ public class Controller {
     private Button video_start;
 
     @FXML
+    private Button video_pause;
+    @FXML
     private ImageView frame;
+    @FXML
+    private TableView<?> Table_anomaly;
+
+    @FXML
+    private WebView webmap;
+    WebEngine webEngine;
+
+
 
     @FXML
     void initialize() {
@@ -81,6 +116,14 @@ public class Controller {
         assert video_stop != null : "fx:id=\"video_stop\" was not injected: check your FXML file 'sample.fxml'.";
         assert video_start != null : "fx:id=\"video_start\" was not injected: check your FXML file 'sample.fxml'.";
         assert frame != null : "fx:id=\"frame\" was not injected: check your FXML file 'sample.fxml'.";
+        assert video_pause != null : "fx:id=\"video_pause\" was not injected: check your FXML file 'sample.fxml'.";
+        assert frameSlider != null : "fx:id=\"frameSlider\" was not injected: check your FXML file 'sample.fxml'.";
+        assert Table_anomaly != null : "fx:id=\"Table_anomaly\" was not injected: check your FXML file 'sample.fxml'.";
+        assert webmap != null : "fx:id=\"webmap\" was not injected: check your FXML file 'sample.fxml'.";
+
+        {
+            webEngine = webmap.getEngine();
+        }
 
         /* set the example as default*/
 
@@ -90,16 +133,45 @@ public class Controller {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+  /* web try*/
+        final URL urlGoogleMaps = getClass().getResource("demo.html");
+        webEngine.load(urlGoogleMaps.toExternalForm());
+        webEngine.setOnAlert(new EventHandler<WebEvent<String>>() {
+            @Override
+            public void handle(WebEvent<String> e) {
+                System.out.println(e.toString());
+            }
+        });
+
+        Button update = new Button("Update");
+        update.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent arg0) {
+                lat = Double.parseDouble(latitude.getText());
+                lon = Double.parseDouble(longitude.getText());
+
+                System.out.printf("%.2f %.2f%n", lat, lon);
+
+                webEngine.executeScript("" +
+                        "window.lat = " + lat + ";" +
+                        "window.lon = " + lon + ";" +
+                        "document.goToLocation(window.lat, window.lon);"
+                );
+            }
+        });
+
     }
-/* methods */
+    /* methods */
 
     public void Example_set() throws FileNotFoundException {
         /*image sequence*/
 
        BasicFrameSequence sequence = new BasicFrameSequence(
-            new Frame("/home/ressay/screen1.jpg"),
-            new Frame("/home/ressay/screen2.jpg"),
-            new Frame("/home/ressay/screen3.jpg")
+            new Frame("/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/screen1.jpg"),
+            new Frame("/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/screen2.jpg"),
+            new Frame("/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/screen3.jpg")
     );
 
 
@@ -126,7 +198,7 @@ public class Controller {
 
 
         frame.setImage(new Image(new FileInputStream(
-                "/home/ressay/5cm.jpg")));
+                "/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/5cm.jpg")));
 
 
     }
@@ -150,13 +222,14 @@ public class Controller {
 
 
  /* putting image into a list and convert it to IMAGE*/
-
-
-
-         setimage = ipR.GetImages();
+      setimage = ipR.GetImages();
         /* displaying image one by one */
-        Collections.shuffle(setimage);
+        //Collections.shuffle(setimage);
         imageIterator = setimage.iterator();
+
+        this.setFrameSlider(setimage.size(),1,1);
+
+
 
          timeline = new Timeline(
                 new KeyFrame(
@@ -165,7 +238,11 @@ public class Controller {
                             centerImage();
 
                             if(imageIterator.hasNext())
-                            frame.setImage(imageIterator.next());
+                            {   centerImage();
+                                frame.setImage(imageIterator.next());
+                              //  frameSlider.increment();
+                            }
+
 
                         }
                 ),
@@ -216,7 +293,7 @@ public class Controller {
     }
 
 
-    public void ButtonStart ()
+    public void ButtonPause()
     {
 
      if(timeline!=null)
@@ -234,5 +311,45 @@ public class Controller {
 
 
     }
+    public void ButtonRestart()
+    {
+        imageIterator = setimage.iterator();
+        if(timeline!=null)
+        {  timeline.playFromStart();
+            System.out.println("restart:timeline");
+        }
+        else {
+            System.out.println("restart:nulltimeline");
+
+            timeline.playFromStart();
+        }
+    }
+
+    public void ChangingSlide()
+    {
+        System.out.println("changed:"+frameSlider.getValue());
+        if(setimage!=null) {
+            centerImage();
+            frame.setImage(setimage.get(((int) frameSlider.getValue() - 1)));
+        }
+    }
+
+
+    public void setFrameSlider(int max , int min , int pace)
+    {
+
+    frameSlider.setMax(max);
+    frameSlider.setMin(min);
+    frameSlider.setId("hello");
+    frameSlider.setShowTickLabels(true);
+
+    frameSlider.setMajorTickUnit(pace);
+    frameSlider.setMinorTickCount(0);
+    frameSlider.showTickLabelsProperty();
+  //  frameSlider.setOrientation(Orientation.HORIZONTAL);
+
+    }
+
+
 
 }

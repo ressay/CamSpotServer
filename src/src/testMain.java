@@ -26,7 +26,7 @@ public class testMain
         System.out.println(date);
         System.out.println(time);
 
-        NetworkFrame frame = new NetworkFrame("/home/ressay/screen4.jpg",
+        NetworkFrame frame = new NetworkFrame("/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/screen4.jpg",
                 "127.0.0.2",1,object.toJSONString());
 //        DbManager.addFrame(frame);
         ArrayList<ReceivedFrame> frames = ReceivedFrame.getIPFrames("127.0.0.1");

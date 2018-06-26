@@ -8,13 +8,20 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 
 <VBox prefHeight="527.0" prefWidth="663.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.Controller">
     <children>
@@ -69,6 +76,7 @@
                                                 </AnchorPane>
                                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                                    <children>
+                                                      <BorderPane prefHeight="200.0" prefWidth="200.0" />
                                                                     <Label layoutX="38.0" layoutY="14.0" prefHeight="18.0" prefWidth="102.0" text="IP_Address">
                                                          <font>
                                                             <Font name="DejaVu Sans Bold" size="13.0" />
@@ -83,25 +91,51 @@
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                                     <children>
                                                             <Label prefHeight="18.0" prefWidth="89.0" text="Live_video" />
-                                          <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="463.0" prefWidth="460.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <SplitPane dividerPositions="0.5032537960954447" orientation="VERTICAL" prefHeight="463.0" prefWidth="460.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <items>
                                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                                    <children>
-                                                                        <ButtonBar layoutX="114.0" layoutY="194.0" prefHeight="38.0" prefWidth="198.0">
-                                                         <buttons>
-                                                                                <Button fx:id="video_stop" mnemonicParsing="false" onAction="#ButtonStop" text="Stop">
-                                                               <font>
-                                                                  <Font name="DejaVu Sans Condensed Bold" size="13.0" />
-                                                               </font>
-                                                            </Button>
-                                                                                <Button fx:id="video_start" mnemonicParsing="false" onAction="#ButtonStart" text="Start">
-                                                               <font>
-                                                                  <Font name="DejaVu Sans Condensed Bold" size="13.0" />
-                                                               </font>
-                                                            </Button>
-                                                         </buttons>
-                                                                        </ButtonBar>
-                                                      <ImageView fx:id="frame" fitHeight="179.0" fitWidth="397.0" layoutX="31.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+                                                      <BorderPane prefHeight="228.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <center>
+                                                            <ImageView fx:id="frame" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                                                               <image>
+                                                                  <Image url="@../VideoUtils/5cm.jpg" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </center>
+                                                         <top>
+                                                            <Slider fx:id="frameSlider" blockIncrement="0.3" majorTickUnit="1.0" max="3.0" maxHeight="-Infinity" minorTickCount="0" onMouseClicked="#ChangingSlide" onScroll="#ChangingSlide" prefHeight="24.0" prefWidth="264.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER">
+                                                               <tooltip>
+                                                                  <Tooltip fx:id="tooltip" text="Image slider (move to pass through images)">
+                                                                     <font>
+                                                                        <Font name="DejaVu Sans Bold" size="13.0" />
+                                                                     </font>
+                                                                  </Tooltip>
+                                                               </tooltip>
+                                                            </Slider>
+                                                         </top>
+                                                         <bottom>
+                                                            <ButtonBar prefHeight="40.0" prefWidth="401.0" BorderPane.alignment="CENTER">
+                                                               <buttons>
+                                                                                      <Button fx:id="video_start" mnemonicParsing="false" onAction="#ButtonRestart" prefHeight="26.0" prefWidth="74.0" text="Restart">
+                                                                     <font>
+                                                                        <Font name="DejaVu Sans Condensed Bold" size="13.0" />
+                                                                     </font>
+                                                                  </Button>
+                                                                  <Button fx:id="video_pause" mnemonicParsing="false" onAction="#ButtonPause" prefHeight="26.0" prefWidth="74.0" text="Play">
+                                                                     <font>
+                                                                        <Font name="DejaVu Sans Condensed Bold" size="13.0" />
+                                                                     </font>
+                                                                  </Button>
+                                                                                      <Button fx:id="video_stop" mnemonicParsing="false" onAction="#ButtonStop" prefHeight="26.0" prefWidth="74.0" text="Stop">
+                                                                     <font>
+                                                                        <Font name="DejaVu Sans Condensed Bold" size="13.0" />
+                                                                     </font>
+                                                                  </Button>
+                                                               </buttons>
+                                                            </ButtonBar>
+                                                         </bottom>
+                                                      </BorderPane>
                                                    </children>
                                                 </AnchorPane>
                                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
@@ -124,9 +158,65 @@
                                 </AnchorPane>
                             </content>
                         </Tab>
-                        <Tab text="dunno_yet">
+                        <Tab text="Map_anomalies">
                             <content>
-                                <AnchorPane />
+                                <AnchorPane>
+                           <children>
+                              <SplitPane dividerPositions="0.3388804841149773" prefHeight="465.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <items>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                       <children>
+                                          <TableView fx:id="Table_anomaly" layoutX="-14.0" layoutY="48.0" prefHeight="463.0" prefWidth="193.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <columns>
+                                              <TableColumn prefWidth="98.0" text="IP_Address" />
+                                              <TableColumn prefWidth="104.0" text="Time (date)" />
+                                            </columns>
+                                          </TableView>
+                                       </children>
+                                    </AnchorPane>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                       <children>
+                                          <TabPane layoutX="39.0" layoutY="38.0" prefHeight="463.0" prefWidth="460.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <tabs>
+                                              <Tab text="Video_description">
+                                                <content>
+                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                         <children>
+                                                            <BorderPane fx:id="frameslider2" prefHeight="430.0" prefWidth="433.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <bottom>
+                                                                  <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                                                    <buttons>
+                                                                      <Button mnemonicParsing="false" onAction="#ButtonPause" text="Play" />
+                                                                        <Button mnemonicParsing="false" onAction="#ButtonRestart" text="Restart" />
+                                                                        <Button mnemonicParsing="false" onAction="#ButtonStop" text="Stop" />
+                                                                    </buttons>
+                                                                  </ButtonBar>
+                                                               </bottom>
+                                                               <top>
+                                                                  <Slider BorderPane.alignment="CENTER" />
+                                                               </top>
+                                                               <center>
+                                                                  <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+                                                               </center>
+                                                            </BorderPane>
+                                                         </children></AnchorPane>
+                                                </content>
+                                              </Tab>
+                                              <Tab text="Map">
+                                                <content>
+                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                         <children>
+                                                            <WebView fx:id="webmap" layoutX="66.0" layoutY="64.0" prefHeight="430.0" prefWidth="433.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                         </children></AnchorPane>
+                                                </content>
+                                              </Tab>
+                                            </tabs>
+                                          </TabPane>
+                                       </children>
+                                    </AnchorPane>
+                                </items>
+                              </SplitPane>
+                           </children></AnchorPane>
                             </content>
                         </Tab>
                     </tabs>
