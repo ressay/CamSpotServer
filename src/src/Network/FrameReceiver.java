@@ -31,7 +31,7 @@ public class FrameReceiver {
                         fos.write(nounouFrame.getArray());
                         onFrameReceived.onFrameReceived(new NetworkFrame("frame"+nounouFrame.getId(),ip,
                                 1,object.toJSONString()
-                        ));
+                        ),((NounouFrame) o));
                         //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -45,6 +45,6 @@ public class FrameReceiver {
     }
 
     public interface OnFrameReceived {
-        public void onFrameReceived (NetworkFrame networkFrame);
+        public void onFrameReceived (NetworkFrame networkFrame,NounouFrame nounouFrame);
     }
 }
