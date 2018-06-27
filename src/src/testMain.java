@@ -12,7 +12,9 @@ import java.util.ArrayList;
  */
 public class testMain
 {
-    public static void main(String[] args) {
+
+
+        public static void main(String[] args) {
         JSONObject object = new JSONObject();
         object.put("lat",new Double(3.456123));
         object.put("lon",new Double(1.556123));
@@ -26,7 +28,7 @@ public class testMain
         System.out.println(date);
         System.out.println(time);
 
-        NetworkFrame frame = new NetworkFrame("/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/screen4.jpg",
+        NetworkFrame frame = new NetworkFrame("/home/masterubunto/CampSpot/CamSpotServer/src/src/VideoUtils/screen3.jpg",
                 "127.0.0.2",1,object.toJSONString());
 //        DbManager.addFrame(frame);
         ArrayList<ReceivedFrame> frames = ReceivedFrame.getIPFrames("127.0.0.1");
@@ -42,6 +44,9 @@ public class testMain
             System.out.println(ip);
         }
 
+        ReceivedFrame.Deleted_data_base("select * from "+"/'"+
+                ReceivedFrame.getFrameReceivedTable()
+        +"/'");
 
 //        launch(args);
     }

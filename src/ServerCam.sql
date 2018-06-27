@@ -73,12 +73,12 @@ CREATE TABLE `Frame_received` (
 --
 
 INSERT INTO `Frame_received` (`idFrame`, `ipAddress`, `MetaDataDescription`, `Image_url`, `Account_idAccount`, `Frame_receivedDate`, `Spotted_anomaly_idSpotted_anomaly`) VALUES
-(2, 2130706433, '{"lat": 3.456123, "lon": 1.556123}', '/home/ressay/screen1.jpg', 1, '2018-06-25 13:49:02', NULL),
-(3, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/ressay/screen2.jpg', 1, '2018-06-25 13:52:37', NULL),
-(4, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/ressay/screen3.jpg', 1, '2018-06-25 14:28:18', NULL),
-(5, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/ressay/screen4.jpg', 1, '2018-06-25 14:58:28', NULL),
-(6, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/ressay/screen4.jpg', 1, '2018-06-25 14:59:27', NULL),
-(7, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/ressay/screen4.jpg', 1, '2018-06-25 14:59:53', NULL);
+(2, 2130706433, '{"lat": 3.456123, "lon": 1.556123}', '/home/masterubunto/Pictures/screen1.jpg', 1, '2018-06-25 13:49:02', NULL),
+(3, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/masterubunto/Pictures/screen2.jpg', 1, '2018-06-25 13:52:37', NULL),
+(4, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/masterubunto/Pictures/screen3.jpg', 1, '2018-06-25 14:28:18', NULL),
+(5, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/masterubunto/Pictures/screen4.jpg', 1, '2018-06-25 14:58:28', NULL),
+(6, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/masterubunto/Pictures/screen4.jpg', 1, '2018-06-25 14:59:27', NULL),
+(7, 2130706434, '{"lat": 3.456123, "lon": 1.556123}', '/home/masterubunto/Pictures/screen4.jpg', 1, '2018-06-25 14:59:53', NULL);
 
 -- --------------------------------------------------------
 

@@ -48,7 +48,7 @@ public class DbConnection {
         _instance = new DbConnection("jdbc:mysql://localhost:3306/",
                 "root",
                 "hassina",
-                "mydb");
+                "CamServer");
     }
 
     public static DbConnection getInstance()
