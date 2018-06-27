@@ -3,6 +3,8 @@ package VideoUtils;
 import Database.DbManager;
 import Database.Tables.ReceivedFrame;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -16,6 +18,7 @@ public class IPFrameSequence extends FrameSequence
     private long to;
     ArrayList<ReceivedFrame> frames;
     ArrayList<Frame> videoFrames = new ArrayList<>();
+    ArrayList<javafx.scene.image.Image> videoImage= new ArrayList<>();
 
     public IPFrameSequence(String ip, long from, long to)
     {
@@ -44,6 +47,11 @@ public class IPFrameSequence extends FrameSequence
             if(from <= frame.getTimeStamp().getTime()
                     && frame.getTimeStamp().getTime() <= to)
             videoFrames.add(new Frame(frame.getFrameUrl()));
+            try {
+                videoImage.add(new javafx.scene.image.Image(new FileInputStream(frame.getFrameUrl())));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -51,5 +59,11 @@ public class IPFrameSequence extends FrameSequence
     public ArrayList<Frame> getFrames()
     {
         return videoFrames;
+    }
+    @Override
+    public ArrayList<javafx.scene.image.Image> GetImages()
+    {
+     return videoImage;
+
     }
 }

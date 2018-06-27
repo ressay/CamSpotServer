@@ -8,4 +8,5 @@ import java.util.ArrayList;
 public abstract class FrameSequence
 {
     abstract public ArrayList<Frame> getFrames();
+    abstract public ArrayList<javafx.scene.image.Image> GetImages();
 }
