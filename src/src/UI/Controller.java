@@ -2,66 +2,35 @@ package UI;
 
 import Database.Tables.ReceivedFrame;
 import Network.NetworkFrame;
-import VideoUtils.BasicFrameSequence;
-
-import VideoUtils.Frame;
 import VideoUtils.IPFrameSequence;
-import com.sun.org.apache.regexp.internal.RE;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.media.MediaView;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import org.json.simple.JSONObject;
-import sample.GoogleApp;
-
 
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.lang.Thread.sleep;
-
-/*public class Controller implements Initializable
-{
-    // have something like this in your window
-    ListView<ReceivedIP> list;
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle)
-    {
-        // something like this to get frames
-        list=new ListView<>();
-        list.getSelectionModel().getSelectedItems().get(0).getFrames();
-
-        // something like this to create dummy data for test
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ResourceBundle;
 
 
-    }
-}
-*/
 public class Controller {
 /* it's an array containing all the ipaddress and their frames available in the database */
 
@@ -158,19 +127,10 @@ public class Controller {
             }
         });
 
-        Button update = new Button("Update");
-        update.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent arg0) {
-                lat = Double.parseDouble(latitude.getText());
-                lon = Double.parseDouble(longitude.getText());
 
-                System.out.printf("%.2f %.2f%n", lat, lon);
 
-                webEngine.executeScript("" + "window.lat = " + lat + ";" + "window.lon = " + lon + ";" + "document.goToLocation(window.lat, window.lon);");
-            }
-        });
+
 
     }
     /* methods */
@@ -283,8 +243,7 @@ public class Controller {
                                  Image i=imageIterator.next();
                                 frame.setImage(i);
 
-                                imageAnomaly.setImage(i);
-                              //  frameSlider.increment();
+
                             }
 
 
@@ -447,15 +406,13 @@ public class Controller {
                 new KeyFrame(Duration.seconds(1))
         );
         timeline.setCycleCount(setimage.size());
-        /*this part enable a looping on the same sequence of images ,"we don't need it now"*/
-     /*   timeline.setOnFinished(event -> {
-            Collections.shuffle(setimage);
-            imageIterator = setimage.iterator();
-            timeline.playFromStart();
-        });
-       */
+
         timeline.play();
 
+
+
+        webEngine.executeScript("" + "window.lat = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat()
+                + ";" + "window.lon = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat() + ";" + "document.goToLocation(window.lat, window.lon);");
 
 
 
