@@ -14,16 +14,16 @@
 
     <script type="text/javascript">
         document.map = new google.maps.Map(document.getElementById("mapcanvas"));
-        var latlng = new google.maps.LatLng(35.857908, 10.598997);
+        var latlng = new google.maps.LatLng(36.7525, 3.0420);
         var Options = {
-            zoom: 15,
+            zoom: 11,
             center: latlng,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("mapcanvas"), Options);
         //var carMarkerImage = new google.maps.MarkerImage('resources/images/car.png');
         var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(35.857908, 10.598997),
+            position: new google.maps.LatLng(36.7525, 3.0420),
             map: map,
             draggable: false,
 //icon: carMarkerImage,
@@ -31,16 +31,19 @@
             autoPan: true
         });
         var infobulle = new google.maps.InfoWindow({
-            content: "ddddd"
+            content: "Black"
         });
         google.maps.event.addListener(marker, 'mouseover', function() {
             infobulle.open(map, marker);
+
         });
         document.goToLocation = function(x, y) {
             alert("goToLocation, x: " + x +", y:" + y);
             var latLng = new google.maps.LatLng(x, y);
             marker.setPosition(latLng);
             map.setCenter(latLng);
+            map.zoom=15;
+
         }
     </script>
 

@@ -1,6 +1,7 @@
 package UI;
 
 import Database.Tables.ReceivedFrame;
+import Database.Tables.SpottedAnomaly;
 import Network.NetworkFrame;
 import VideoUtils.IPFrameSequence;
 import javafx.animation.KeyFrame;
@@ -45,8 +46,7 @@ public class Controller {
     double lat;
     double lon;
     int index = 0;
-    final TextField latitude = new TextField("" + 35.857908 * 1.00007);
-    final TextField longitude = new TextField("" + 10.598997 * 1.00007);
+
     @FXML
     private Slider frameSlider;
     @FXML
@@ -207,21 +207,11 @@ public class Controller {
 
     public void Display_Frame (){
     /* getting the selected ip address */
-
-
     centerImage();
-
     ReceivedFrame ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
+    JOptionPane.showMessageDialog (null, "the IPAddress:"+ipR+" Has been Selected");
 
-        JOptionPane.showMessageDialog (
-                null, "the IPAddress:"+ipR+" Has been Selected");
-    System.out.println("IP selected");
-
-
-
-
-
- /* putting image into a list and convert it to IMAGE*/
+    /* putting image into a list and convert it to IMAGE*/
       setimage = ReceivedFrame.getIPImage(ipR.getIp());
         /* displaying image one by one */
         //Collections.shuffle(setimage);
@@ -253,12 +243,12 @@ public class Controller {
         );
         timeline.setCycleCount(setimage.size());
         /*this part enable a looping on the same sequence of images ,"we don't need it now"*/
-     /*   timeline.setOnFinished(event -> {
+        /*   timeline.setOnFinished(event -> {
             Collections.shuffle(setimage);
             imageIterator = setimage.iterator();
             timeline.playFromStart();
         });
-       */
+        */
         timeline.play();
 
 
@@ -367,18 +357,18 @@ public class Controller {
 
         String ipR=Table_anomaly.getSelectionModel().getSelectedItems().get(0);
 
-        JOptionPane.showMessageDialog (
-                null, "the IPAddress:"+ipR+" Has been Selected");
-        System.out.println("IP selected");
+
+        JOptionPane.showMessageDialog (null, "the IPAddress:"+ipR+" Has been Selected");
+
 
 
 
         IPFrameSequence anomaly= new IPFrameSequence(ipR,System.currentTimeMillis()-5000,System.currentTimeMillis()+5000);
         setimage=anomaly.GetImages();
 
- /*
+
         /* displaying image one by one */
-        //Collections.shuffle(setimage);
+
         imageIterator = setimage.iterator();
 
         this.setFrameSlider(slider2,setimage.size(),1,1);
@@ -411,8 +401,10 @@ public class Controller {
 
 
 
-        webEngine.executeScript("" + "window.lat = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat()
-                + ";" + "window.lon = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat() + ";" + "document.goToLocation(window.lat, window.lon);");
+        webEngine.executeScript(""
+                + "window.lat = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat()
+                + ";" +
+                "window.lon = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat() + ";" + "document.goToLocation(window.lat, window.lon);");
 
 
 
