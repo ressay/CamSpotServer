@@ -19,6 +19,10 @@ import java.util.Date;
 public class ReceivedFrame
 {
 
+    public void setFrameUrl(String frameUrl) {
+        this.frameUrl = frameUrl;
+    }
+
     private static final String frameReceivedTable = "Frame_received";
 
     public static String getFrameReceivedTable() {
@@ -82,6 +86,15 @@ public class ReceivedFrame
         this.timeStamp = new Timestamp(timeStamp);
     }
 
+    public ReceivedFrame(String frameUrl, String ip,  String jsonDesc,long timeStamp)
+    {
+        this.frameUrl = frameUrl;
+        this.ip = ip;
+        this.accountId = 0;
+        this.metaData = new FrameMetaData(jsonDesc);
+        this.timeStamp = new Timestamp(timeStamp);
+    }
+
     public ReceivedFrame(String frameUrl, String ip, int accountId, String jsonDesc, Timestamp timeStamp)
     {
         this.frameUrl = frameUrl;
@@ -120,7 +133,8 @@ public class ReceivedFrame
                 ""+"SET Spotted_anomaly_idSpotted_anomaly ="+id;*/
 
         String query =
-                "UPDATE `Frame_received` SET `Spotted_anomaly_idSpotted_anomaly`=1 WHERE INET_NTOA(ipAddress) LIKE '"+ip+"'";
+                "UPDATE `Frame_received` SET `Spotted_anomaly_idSpotted_anomaly`=1 " +
+                        "WHERE INET_NTOA(ipAddress) LIKE '"+ip+"'";
         try
         {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -200,6 +214,9 @@ public class ReceivedFrame
         }
         return ips;
     }
+
+
+
 
 
     static public ArrayList<ReceivedFrame> getIPFrames(String ip)

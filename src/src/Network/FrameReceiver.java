@@ -10,6 +10,9 @@ import java.io.IOException;
 
 public class FrameReceiver {
     private Server server;
+    public static int id;
+    public static String path;
+    public NetworkFrame nt;
 
     public FrameReceiver(Server server) {
         this.server = server;
@@ -29,7 +32,8 @@ public class FrameReceiver {
                     object.put("lon",((NounouFrame) o).getLon());
                     try (FileOutputStream fos = new FileOutputStream("nounouf.jpg")) {
                         fos.write(nounouFrame.getArray());
-                        onFrameReceived.onFrameReceived(new NetworkFrame("frame"+nounouFrame.getId(),ip,
+                        onFrameReceived.onFrameReceived(
+                                new NetworkFrame("frame"+nounouFrame.getId(),ip,
                                 1,object.toJSONString()
                         ),((NounouFrame) o));
                         //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream

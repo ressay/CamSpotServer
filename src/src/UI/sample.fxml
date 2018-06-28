@@ -182,6 +182,7 @@
                                                                       <Button mnemonicParsing="false" onAction="#ButtonPause" text="Play" />
                                                                         <Button mnemonicParsing="false" onAction="#ButtonRestart" text="Restart" />
                                                                         <Button mnemonicParsing="false" onAction="#ButtonStop" text="Stop" />
+                                                                        <Button mnemonicParsing="false" onAction="#Button_addAnomaly" text="Add_anomaly_object" />
                                                                     </buttons>
                                                                   </ButtonBar>
                                                                </bottom>

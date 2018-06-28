@@ -19,6 +19,12 @@ public class NetworkFrame
     }
 
 
+    public NetworkFrame(String frameUrl, String ip,  String jsonDesc)
+    {
+        this.frame = new ReceivedFrame(frameUrl,ip,jsonDesc,System.currentTimeMillis());
+    }
+
+
     public ReceivedFrame getFrame()
     {
         return frame;

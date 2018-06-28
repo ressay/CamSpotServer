@@ -12,14 +12,14 @@ public class SpottedAnomaly {
     private String AnomalyDesc;
     private Timestamp DateAnomaly;
     //----------------------------------Constractor-------------------------------//
-    SpottedAnomaly(int idSpottedAnomaly,String AnomalyDesc, Timestamp DateAnomaly)
+    public SpottedAnomaly(int idSpottedAnomaly,String AnomalyDesc, Timestamp DateAnomaly)
     {
         this.AnomalyDesc=AnomalyDesc;
         this.DateAnomaly=DateAnomaly;
         this.idSpottedAnomaly=idSpottedAnomaly;
 
     }
-    SpottedAnomaly(int idSpottedAnomaly,String AnomalyDesc, long DateAnomaly)
+    public SpottedAnomaly(int idSpottedAnomaly,String AnomalyDesc, long DateAnomaly)
     {
         this.AnomalyDesc=AnomalyDesc;
         this.DateAnomaly=new Timestamp(DateAnomaly);
@@ -90,24 +90,22 @@ public class SpottedAnomaly {
         return frames;
     }
 
-    public ArrayList<ReceivedFrame>  getFrams_cool()
+    public static ArrayList<SpottedAnomaly>  getSpottedAnomaly()
     {
         Connection connection = DbConnection.getInstance().getConnection();
-        String query = "select * from Frame_received" +
-                " where Spotted_anomaly_idSpotted_anomaly="+this.getId();
+        String query = "select * from "+SpottedAnomaly.SpottedAnomalyTable +";" ;
         PreparedStatement statement = null;
-        ArrayList<ReceivedFrame> frames = new ArrayList<>();
+        ArrayList<SpottedAnomaly> frames = new ArrayList<>();
         try {
             statement = connection.prepareStatement(query);
             ResultSet set = statement.executeQuery();
             while (set.next())
             {
-                String frameUrl = set.getString("Image_url");
-                String ipAd = set.getString("ipAd");
-                int accountId = set.getInt("Account_idAccount");
-                String json = set.getString("MetaDataDescription");
-                Timestamp timeStamp = set.getTimestamp("Frame_receivedDate");
-                frames.add(new ReceivedFrame(frameUrl,ipAd,accountId,json,timeStamp));
+
+                frames.add(
+                        new SpottedAnomaly(set.getInt("idSpotted_anomaly"),
+                                set.getString("Anomaly_description"),
+                                set.getTimestamp("Date_anomaly")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -136,6 +134,7 @@ public class SpottedAnomaly {
             e.printStackTrace();
         }
     }
+
     public void getAnomalyFromDatabase(int id) //using its id
     {
         Connection connection = DbConnection.getInstance().getConnection();
@@ -164,11 +163,18 @@ public class SpottedAnomaly {
         {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.executeUpdate();
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             e.printStackTrace();
         }
 
 
+    }
+
+    @Override
+    public String toString()
+    {
+        return "anomaly:"+this.getId()+":Time:"+this.getDate()+":Description:"+this.getDesc()+"\n";
     }
 }
