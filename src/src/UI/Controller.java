@@ -72,7 +72,7 @@ public class Controller {
     private URL location;
 
     @FXML
-    private ListView<ReceivedFrame> IP_Address_List;
+    private ListView<String> IP_Address_List;
 
     @FXML
     private ListView<SpottedAnomaly> anomaly_description;
@@ -153,7 +153,16 @@ public class Controller {
     public void Example_set() throws FileNotFoundException
     {
 
-        SampleLoader(3);
+        //        SampleLoader(3);
+
+
+        ArrayList<String> list_ip=ReceivedFrame.getIpsReceived(currentTimeMillis()-12000000,currentTimeMillis());
+
+
+        System.out.println("ip:"+list_ip.size());
+
+            this.IP_Address_List.getItems().addAll(list_ip);
+
 
 
         this.frame.setImage(new Image(new FileInputStream("./CamSpotServer/src/src/VideoUtils/5cm.jpg")));
@@ -216,7 +225,7 @@ public class Controller {
                 }
                 current_networkframe.getFrame().setFrameUrl(frameReceiver.path);
                 current_networkframe.getFrame().addFrameToDatabase();
-                IP_Address_List.getItems().add(current_networkframe.getFrame());
+                IP_Address_List.getItems().add(current_networkframe.getFrame().getIp());
             }
         });
 
@@ -287,7 +296,7 @@ public class Controller {
 
 
 
-                IP_Address_List.getItems().add(frame.getFrame());
+                IP_Address_List.getItems().add(frame.getFrame().getIp());
 
             }
 
@@ -380,11 +389,11 @@ public class Controller {
 
 
             centerImage();
-            ReceivedFrame ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
+            String ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
 
             /* putting image into a list and convert it to IMAGE*/
 
-             IPFrameSequence  selected_ip = new IPFrameSequence(ipR.getIp(),
+             IPFrameSequence  selected_ip = new IPFrameSequence(ipR,
                 System.currentTimeMillis()-12000,System.currentTimeMillis());
              setimage =selected_ip.GetImages();
             /* displaying image one by one */
