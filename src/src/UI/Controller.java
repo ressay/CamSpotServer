@@ -1,26 +1,24 @@
 package UI;
 
+import Database.DbManager;
 import Database.Tables.ReceivedFrame;
 import Database.Tables.SpottedAnomaly;
-import Network.NetworkFrame;
+import Network.*;
+import VideoUtils.FrameSequence;
 import VideoUtils.IPFrameSequence;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import org.json.simple.JSONObject;
 
-import javax.swing.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,10 +33,19 @@ import java.util.ResourceBundle;
 public class Controller {
 /* it's an array containing all the ipaddress and their frames available in the database */
 
-
+    public long timeBefore = 1000*60*60*5;
     protected Timeline timeline;
     protected List<Image> setimage;
     protected Iterator<Image> imageIterator;
+
+
+
+
+    protected Thread updating_anomaly;
+
+    protected NetworkFrame current_networkframe;
+
+
 
 
     /*map stuff*/
@@ -46,6 +53,10 @@ public class Controller {
     double lat;
     double lon;
     int index = 0;
+    ArrayList<SpottedAnomaly> Spottedanomalys;
+    ArrayList<ReceivedFrame> Received_Frames;
+
+
 
     @FXML
     private Slider frameSlider;
@@ -58,10 +69,10 @@ public class Controller {
     private URL location;
 
     @FXML
-    private ListView<ReceivedFrame> IP_Address_List;
+    public ListView<ReceivedIP> IP_Address_List;
 
     @FXML
-    private ListView<Anomaly> anomaly_description;
+    public ListView<SpottedAnomaly> anomaly_description;
 
 
     @FXML
@@ -75,7 +86,7 @@ public class Controller {
     @FXML
     private ImageView frame;
     @FXML
-    private ListView<String> Table_anomaly;
+    public ListView<ReceivedIP> Table_anomaly;
     @FXML
     private WebView webmap;
     private WebEngine webEngine;
@@ -88,6 +99,9 @@ public class Controller {
 
     @FXML
     private ImageView imageAnomaly;
+
+    public AnomalyPredictor predictor = new AnomalyPredictor();
+
     @FXML
     void initialize() {
         assert IP_Address_List != null : "fx:id=\"IP_Address_List\" was not injected: check your FXML file 'sample.fxml'.";
@@ -99,7 +113,6 @@ public class Controller {
         assert frameSlider != null : "fx:id=\"frameSlider\" was not injected: check your FXML file 'sample.fxml'.";
         assert Table_anomaly != null : "fx:id=\"Table_anomaly\" was not injected: check your FXML file 'sample.fxml'.";
         assert webmap != null : "fx:id=\"webmap\" was not injected: check your FXML file 'sample.fxml'.";
-        assert Table_anomaly != null : "fx:id=\"Table_anomaly\" was not injected: check your FXML file 'sample.fxml'.";
         assert frameslider2 != null : "fx:id=\"frameslider2\" was not injected: check your FXML file 'sample.fxml'.";
         assert imageAnomaly != null : "fx:id=\"imageAnomaly\" was not injected: check your FXML file 'sample.fxml'.";
         assert webmap != null : "fx:id=\"webmap\" was not injected: check your FXML file 'sample.fxml'.";
@@ -110,109 +123,74 @@ public class Controller {
 
         /* set the example as default*/
 
-        try {
+//        try {
             centerImage();
-            Example_set();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
   /* web try*/
         final URL urlGoogleMaps = getClass().getResource("demo.html");
         webEngine.load(urlGoogleMaps.toExternalForm());
-        webEngine.setOnAlert(new EventHandler<WebEvent<String>>() {
-            @Override
-            public void handle(WebEvent<String> e) {
-                System.out.println(e.toString());
-            }
-        });
+        webEngine.setOnAlert(e -> System.out.println(e.toString()));
 
+        IP_Address_List.setOnMouseClicked(mouseEvent -> this.Display_Frame());
+        loadIps();
+        loadAnomalies();
 
-
-
-
-
-    }
-    /* methods */
-
-    public void Example_set() throws FileNotFoundException {
-        SampleLoader(3);
-        this.frame.setImage(
-
-                new Image(new FileInputStream("./CamSpotServer/src/src/VideoUtils/5cm.jpg")));
-
-
+        ListUpdaterThread.updateLists(this);
+        FrameStorer.storeFrames(predictor);
     }
 
-    public void SampleLoader(int nbsamples)
+    public void loadAnomalies()
     {
-
-
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-        System.out.println("Current relative path is: " + s);
-
-
-        for(int i=1;i<4;i++)
+        ArrayList<SpottedAnomaly> anomalies = SpottedAnomaly.getAnomalies();
+        ArrayList<ReceivedIP> rIps = new ArrayList<>();
+        for(SpottedAnomaly anomaly : anomalies)
         {
-            for(int j=3;j<nbsamples+3;j++)
-            {
-                JSONObject object = new JSONObject();
-                object.put("lat", new Double(3.456123+i));
-                object.put("lon", new Double(1.556123+j));
-             //   System.out.println(object.toJSONString());
-              //  ReceivedFrame.FrameMetaData metaData = new ReceivedFrame.FrameMetaData(object.toJSONString());
-              //  System.out.println("lat " + metaData.getLat() + " lon " + metaData.getLon());
-
-                java.sql.Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                java.sql.Date date = new java.sql.Date(timeStamp.getTime());
-                Time time = new Time(timeStamp.getTime());
-                //System.out.println(date);
-                //System.out.println(time);
-
-                NetworkFrame frame = new NetworkFrame("" +
-                        "./CamSpotServer/src/src/VideoUtils/screen"+i+".jpg",
-                        "127.0.0."+j, 1, object.toJSONString());
-                frame.getFrame().addFrameToDatabase();
-
-
-                ReceivedFrame.UPDATE_Samples_anomalyset("127.0.0.3");
-
-                IP_Address_List.getItems().add(frame.getFrame());
-
-            }
+            rIps.add(new ReceivedIP(anomaly.sequence(),anomaly.getFrames_cool().getIp(),null));
         }
 
-
-
-
+        Table_anomaly.getItems().clear();
+        Table_anomaly.getItems().addAll(rIps);
+//        ArrayLisst
+//        IP_Address_List.getItems().add(frame.getFrame());
     }
 
-    public void GetintoTableView()
+    public void loadIps()
     {
+        ArrayList<String> ips = DbManager.getIpAdresses(
+                System.currentTimeMillis()- timeBefore,System.currentTimeMillis()
+        );
+        ArrayList<ReceivedIP> rIps = new ArrayList<>();
+        for(String ip : ips)
+        {
+            rIps.add(new ReceivedIP(new IPFrameSequence(ip,System.currentTimeMillis()-timeBefore
+            ,System.currentTimeMillis()),ip,null));
+        }
+        IP_Address_List.getItems().clear();
+        IP_Address_List.getItems().addAll(rIps);
+//        ArrayLisst
+//        IP_Address_List.getItems().add(frame.getFrame());
 
 
-        ArrayList <String> reponse= ReceivedFrame.getIpAdress_having_anomaly
-                (System.currentTimeMillis()-600*600*3,System.currentTimeMillis());
-        if(reponse!=null)
-        System.out.println("worked"+reponse.get(0));
-        else
-        System.out.println("hello i'm not working");
 
-        this.Table_anomaly.getItems().addAll(reponse);
-
-
-
+        this.anomaly_description.getItems().addAll(SpottedAnomaly.getAnomalies());
     }
 
-    public void Display_Frame (){
+    /* methods */
+
+    public void Display_Frame()
+    {
     /* getting the selected ip address */
     centerImage();
-    ReceivedFrame ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
-    JOptionPane.showMessageDialog (null, "the IPAddress:"+ipR+" Has been Selected");
+    ReceivedIP ipR=IP_Address_List.getSelectionModel().getSelectedItems().get(0);
+//    JOptionPane.showMessageDialog (null, "the IPAddress:"+ipR+" Has been Selected");
 
     /* putting image into a list and convert it to IMAGE*/
-      setimage = ReceivedFrame.getIPImage(ipR.getIp());
+        setimage = ReceivedFrame.getIPImage(ipR.getIpAddress());
         /* displaying image one by one */
         //Collections.shuffle(setimage);
         imageIterator = setimage.iterator();
@@ -239,7 +217,7 @@ public class Controller {
 
                         }
                 ),
-                new KeyFrame(Duration.seconds(1))
+                new KeyFrame(Duration.millis(100))
         );
         timeline.setCycleCount(setimage.size());
         /*this part enable a looping on the same sequence of images ,"we don't need it now"*/
@@ -252,16 +230,66 @@ public class Controller {
         timeline.play();
 
 
-     this.anomaly_description.getItems().add(new Anomaly("Car_accident","happened at time:"+System.nanoTime()));
 
 
-     GetintoTableView();
+
 
 
     }
 
+    public void Updating_Anomaly_Table()
+    {
 
 
+
+
+        ReceivedFrame.Deleted_data_base("SET FOREIGN_KEY_CHECKS=0;");
+//       ReceivedFrame.Deleted_data_base("ALTER TABLE Frame_received MODIFY  CONSTRAINT `fk_Frame_received_Spotted_anomaly1` DISABLE");
+        ReceivedFrame.Deleted_data_base("DELETE FROM `Spotted_anomaly` WHERE 1");
+        ReceivedFrame.Deleted_data_base("SET FOREIGN_KEY_CHECKS=1;");
+
+
+        this.Spottedanomalys=new ArrayList<>();
+
+        Runnable runnable = () ->
+        {
+            while(true)
+            {
+                if(this.Spottedanomalys!=null) {
+                    if (this.Spottedanomalys.size() != SpottedAnomaly.getSpottedAnomaly().size()) {
+                        {
+                            //System.out.println("update");
+
+                            // this.Table_anomaly.getItems().addAll(this.Spottedanomalys);
+                            this.Spottedanomalys = SpottedAnomaly.getSpottedAnomaly();
+                          ///  this.Table_anomaly.getItems().addAll(SpottedAnomaly.getAnomalies());
+                            this.anomaly_description.getItems().addAll(this.Spottedanomalys);
+                        }
+                    }
+                    else
+                        this.Spottedanomalys=SpottedAnomaly.getSpottedAnomaly();
+
+                }
+                //  if(this.Spottedanomalys!=null)
+                // System.out.println("updating:"+this.Spottedanomalys.size());
+
+            }
+
+
+        };
+
+
+        Thread ui= new Thread(runnable);
+        this.updating_anomaly=ui;
+
+
+        this.updating_anomaly.start();
+
+
+        if(this.Spottedanomalys!=null)
+           // this.Table_anomaly.getItems().addAll(this.Spottedanomalys);
+                this.anomaly_description.getItems().addAll(this.Spottedanomalys);
+    }
 
     public void centerImage() {
         Image img = frame.getImage();
@@ -355,15 +383,16 @@ public class Controller {
 
         centerImage();
 
-        String ipR=Table_anomaly.getSelectionModel().getSelectedItems().get(0);
+        ReceivedIP receivedIP = Table_anomaly.getSelectionModel().getSelectedItems().get(0);
+        String ipR= receivedIP.toString();
 
 
-        JOptionPane.showMessageDialog (null, "the IPAddress:"+ipR+" Has been Selected");
+//        JOptionPane.showMessageDialog (null, "the IPAddress:"+ipR+" Has been Selected");
 
 
 
-
-        IPFrameSequence anomaly= new IPFrameSequence(ipR,System.currentTimeMillis()-5000,System.currentTimeMillis()+5000);
+        FrameSequence anomaly = receivedIP.sequence;
+//        IPFrameSequence anomaly= new IPFrameSequence(ipR,System.currentTimeMillis()-5000,System.currentTimeMillis()+5000);
         setimage=anomaly.GetImages();
 
 
@@ -393,19 +422,32 @@ public class Controller {
 
                         }
                 ),
-                new KeyFrame(Duration.seconds(1))
+                new KeyFrame(Duration.millis(101))
         );
         timeline.setCycleCount(setimage.size());
 
         timeline.play();
 
+      String lat="36.7525";
+      String lon ="13.0420";
+
+
+        System.out.println("lat:"+ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat()+
+                "\nlon:"+ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLon());
+
+        lat= String.valueOf(ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat());
+        lon= String.valueOf(ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLon());
+
+
+        System.out.println("lat2:"+lat+":lon:"+lon);
+
 
 
         webEngine.executeScript(""
-                + "window.lat = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat()
+                + "window.lat = " + lat
                 + ";" +
-                "window.lon = " + ReceivedFrame.getIPFrames(ipR).get(0).getMetaData().getLat() + ";" + "document.goToLocation(window.lat, window.lon);");
-
+                "window.lon = " + lon +
+                ";" + "document.goToLocation(window.lat, window.lon);");
 
 
 

@@ -1,6 +1,8 @@
 package Database.Tables;
 
 import Database.DbConnection;
+import VideoUtils.FrameSequence;
+import VideoUtils.IPFrameSequence;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,18 +14,16 @@ public class SpottedAnomaly {
     private String AnomalyDesc;
     private Timestamp DateAnomaly;
     //----------------------------------Constractor-------------------------------//
-    SpottedAnomaly(int idSpottedAnomaly,String AnomalyDesc, Timestamp DateAnomaly)
+    public SpottedAnomaly(int idSpotted_anomaly, String AnomalyDesc, Timestamp DateAnomaly)
     {
         this.AnomalyDesc=AnomalyDesc;
         this.DateAnomaly=DateAnomaly;
-        this.idSpottedAnomaly=idSpottedAnomaly;
 
     }
-    SpottedAnomaly(int idSpottedAnomaly,String AnomalyDesc, long DateAnomaly)
+    public SpottedAnomaly(String AnomalyDesc, long DateAnomaly)
     {
         this.AnomalyDesc=AnomalyDesc;
         this.DateAnomaly=new Timestamp(DateAnomaly);
-        this.idSpottedAnomaly=idSpottedAnomaly;
     }
     //-----------------------------------Methods---------------------------------//
     //Gets//////////////
@@ -66,14 +66,53 @@ public class SpottedAnomaly {
     /*********************************/
     //base methods//
     /********************************/
-    public ArrayList<ReceivedFrame>  getFrams()
+
+    public FrameSequence sequence()
+    {
+        ReceivedFrame frame = getFrames_cool();
+        long timeFrame = frame.getTimeStamp().getTime();
+        return new IPFrameSequence(frame.getIp(),timeFrame-2*1000,timeFrame+2*1000);
+    }
+
+    public static ArrayList<SpottedAnomaly>  getSpottedAnomaly()
     {
         Connection connection = DbConnection.getInstance().getConnection();
-        String query = "select * from Frame_received where Spotted_anomaly_idSpotted_anomaly="+this.getId();
+        String query = "select * from "+SpottedAnomaly.SpottedAnomalyTable +";" ;
         PreparedStatement statement = null;
+        ArrayList<SpottedAnomaly> frames = new ArrayList<>();
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet set = statement.executeQuery();
+            while (set.next())
+            {
+
+                frames.add(
+                        new SpottedAnomaly(set.getInt("idSpotted_anomaly"),
+                                set.getString("Anomaly_description"),
+                                set.getTimestamp("Date_anomaly")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return frames;
+    }
+
+
+
+
+    public ArrayList<ReceivedFrame>  getFrames(long from, long to)
+    {
+        Connection connection = DbConnection.getInstance().getConnection();
+        String query = "select *, INET_NTOA(ipAddress) as ipAd from Frame_received " +
+                "where (Spotted_anomaly_idSpotted_anomaly=? AND " +
+                "(Frame_receivedDate >= ? AND Frame_receivedDate <= ?))";
+        PreparedStatement statement;
         ArrayList<ReceivedFrame> frames = new ArrayList<>();
         try {
             statement = connection.prepareStatement(query);
+            statement.setInt(1,this.getId());
+            statement.setTimestamp(2,new Timestamp(from));
+            statement.setTimestamp(3,new Timestamp(to));
             ResultSet set = statement.executeQuery();
             while (set.next())
             {
@@ -90,15 +129,15 @@ public class SpottedAnomaly {
         return frames;
     }
 
-    public ArrayList<ReceivedFrame>  getFrams_cool()
+    public ReceivedFrame  getFrames_cool()
     {
         Connection connection = DbConnection.getInstance().getConnection();
-        String query = "select * from Frame_received" +
-                " where Spotted_anomaly_idSpotted_anomaly="+this.getId();
-        PreparedStatement statement = null;
-        ArrayList<ReceivedFrame> frames = new ArrayList<>();
+        String query = "select *, INET_NTOA(ipAddress) as ipAd from Frame_received" +
+                " where Spotted_anomaly_idSpotted_anomaly = ?";
+        PreparedStatement statement;
         try {
             statement = connection.prepareStatement(query);
+            statement.setInt(1,idSpottedAnomaly);
             ResultSet set = statement.executeQuery();
             while (set.next())
             {
@@ -107,34 +146,37 @@ public class SpottedAnomaly {
                 int accountId = set.getInt("Account_idAccount");
                 String json = set.getString("MetaDataDescription");
                 Timestamp timeStamp = set.getTimestamp("Frame_receivedDate");
-                frames.add(new ReceivedFrame(frameUrl,ipAd,accountId,json,timeStamp));
+                return new ReceivedFrame(frameUrl,ipAd,accountId,json,timeStamp);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return frames;
+        return null;
     }
 
 
 
 
-    public void addAnomalyToDatabase()
+    public int addAnomalyToDatabase()
     {
         Connection connection = DbConnection.getInstance().getConnection();
         String query = "INSERT INTO "+SpottedAnomalyTable+" " +
-                "(`idSpotted_anomaly`, `Anomaly_description`, `Date_anomaly`)"+
-                " VALUES" + "(?,?,?)";
+                "(`Anomaly_description`)"+
+                " VALUES" + "(?)";
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1,String.valueOf(this.getId()));
-            statement.setString(2,this.getDesc());
-            statement.setString(3,this.getDate().toString());
+            PreparedStatement statement = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+//            statement.setString(1,String.valueOf(this.getId()));
+            statement.setString(1,this.getDesc());
             statement.executeUpdate();
+            ResultSet set = statement.getGeneratedKeys();
+            if(set.next())
+                return set.getInt(1);
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
+        return -1;
     }
     public void getAnomalyFromDatabase(int id) //using its id
     {
@@ -155,6 +197,30 @@ public class SpottedAnomaly {
         }
 
     }
+
+
+    static public ArrayList<SpottedAnomaly> getAnomalies()
+    {
+        Connection connection = DbConnection.getInstance().getConnection();
+        String query ="Select * from "+SpottedAnomalyTable;
+        ArrayList<SpottedAnomaly> anomalies = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            // statement.setInt(1,id);
+            ResultSet set = statement.executeQuery();
+            while (set.next()) {
+                SpottedAnomaly anomaly = new SpottedAnomaly(set.getString("Anomaly_description"),0);
+                anomaly.setId(set.getInt("idSpotted_anomaly"));
+                anomalies.add(anomaly);
+            }
+            return anomalies;
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return anomalies;
+    }
+
     public void updateFramesWithAnomaly(int idFrame)
     {
         //updating frame having id=idFrame
@@ -170,5 +236,14 @@ public class SpottedAnomaly {
         }
 
 
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SpottedAnomaly{" +
+                "idSpottedAnomaly=" + idSpottedAnomaly +
+                ", AnomalyDesc='" + AnomalyDesc + '\'' +
+                '}';
     }
 }

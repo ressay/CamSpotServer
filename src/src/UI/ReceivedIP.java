@@ -4,6 +4,7 @@ import VideoUtils.BasicFrameSequence;
 import VideoUtils.Frame;
 import VideoUtils.FrameSequence;
 import javafx.scene.image.Image;
+import org.json.simple.JSONObject;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -13,17 +14,19 @@ import java.util.ArrayList;
  */
 public class ReceivedIP
 {
-    BasicFrameSequence sequence;
+    FrameSequence sequence;
     String ipAddress;
+    JSONObject obj;
 
     public String getIpAddress() {
         return ipAddress;
     }
 
-    public ReceivedIP(BasicFrameSequence sequence, String ipAddress)
+    public ReceivedIP(FrameSequence sequence, String ipAddress,JSONObject obj1)
     {
         this.sequence = sequence;
         this.ipAddress = ipAddress;
+        this.obj=obj1;
     }
 
     public ArrayList<Frame> getFrames()

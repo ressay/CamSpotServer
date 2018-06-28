@@ -66,7 +66,7 @@ public class ReceivedFrame
         }
     }
 
-
+    private int id=-1;
     private String frameUrl;
     private String ip;
     private int accountId;
@@ -100,11 +100,39 @@ public class ReceivedFrame
                 "(INET_ATON(?),?,?,?)";
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
             statement.setString(1,this.getIp());
             statement.setString(2,this.getMetaData().toString());
             statement.setString(3,this.getFrameUrl());
             statement.setInt(4,this.getAccountId());
+            statement.executeUpdate();
+            ResultSet set = statement.getGeneratedKeys();
+            if(set.next())
+                id = set.getInt(1);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void setAnomaly(int idAnomaly)
+    {
+        if(id == -1)
+        {
+            System.out.println("error id in setAnomaly");
+            return;
+        }
+        Connection connection = DbConnection.getInstance().getConnection();
+        String query =
+                "UPDATE `Frame_received` SET " +
+                        "`Spotted_anomaly_idSpotted_anomaly` = ? WHERE idFrame = ?";
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement(query);
+            System.out.println(id + " and " + idAnomaly);
+            statement.setInt(1,idAnomaly);
+            statement.setInt(2,id);
+            System.out.println(query);
             statement.executeUpdate();
         } catch (SQLException e)
         {
@@ -179,7 +207,7 @@ public class ReceivedFrame
         String query = "SELECT DISTINCT INET_NTOA(ipAddress) as ipAd " +
                 "FROM `"+frameReceivedTable+ "` WHERE" +
                 " (Frame_receivedDate >= ? AND Frame_receivedDate <= ?)";
-        System.out.println(query);
+//        System.out.println(query);
         try
         {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -207,7 +235,7 @@ public class ReceivedFrame
         Connection connection = DbConnection.getInstance().getConnection();
         String query = "SELECT "+frameReceivedTable+".*,INET_NTOA(ipAddress) as ipAd " +
                 "FROM `"+frameReceivedTable+ "` WHERE INET_NTOA(ipAddress) = ?";
-        System.out.println(query);
+//        System.out.println(query);
         ArrayList<ReceivedFrame> frames = new ArrayList<>();
         try
         {
@@ -255,7 +283,7 @@ public class ReceivedFrame
         Connection connection = DbConnection.getInstance().getConnection();
         String query = "SELECT "+frameReceivedTable+".*,INET_NTOA(ipAddress) as ipAd " +
                 "FROM `"+frameReceivedTable+ "` WHERE INET_NTOA(ipAddress) = ?";
-        System.out.println(query);
+//        System.out.println(query);
         ArrayList<Image> frames = new ArrayList<>();
         try
         {
@@ -272,7 +300,8 @@ public class ReceivedFrame
                 Timestamp timeStamp = set.getTimestamp("Frame_receivedDate");
                 try {
 
-                    frameUrl=frameUrl.replaceFirst("ressay","masterubunto/Pictures");
+//                    frameUrl=frameUrl.replaceFirst("ressay","masterubunto/Pictures");
+                    frameUrl=frameUrl.replaceFirst("./CamSpotServer","./");
                     frames.add(new Image(new FileInputStream(frameUrl)));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -316,5 +345,15 @@ public class ReceivedFrame
     public String toString()
     {
         return "ip: " + ip + ":dateTime: " + timeStamp;
+    }
+
+    public void setFrameUrl(String frameUrl)
+    {
+        this.frameUrl = frameUrl;
+    }
+
+    public void setIp(String ip)
+    {
+        this.ip = ip;
     }
 }

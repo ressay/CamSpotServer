@@ -44,13 +44,20 @@ public class IPFrameSequence extends FrameSequence
     {
         for (ReceivedFrame frame : frames)
         {
+            String frameUrl = frame.getFrameUrl();
+            frameUrl=frameUrl.replaceFirst("./CamSpotServer","./");
             if(from <= frame.getTimeStamp().getTime()
                     && frame.getTimeStamp().getTime() <= to)
-            videoFrames.add(new Frame(frame.getFrameUrl()));
-            try {
-                videoImage.add(new javafx.scene.image.Image(new FileInputStream(frame.getFrameUrl())));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            {
+                videoFrames.add(new Frame(frameUrl));
+                try
+                {
+
+                    videoImage.add(new javafx.scene.image.Image(new FileInputStream(frameUrl)));
+                } catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -64,6 +71,5 @@ public class IPFrameSequence extends FrameSequence
     public ArrayList<javafx.scene.image.Image> GetImages()
     {
      return videoImage;
-
     }
 }

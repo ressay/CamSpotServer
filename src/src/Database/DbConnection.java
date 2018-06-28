@@ -47,8 +47,8 @@ public class DbConnection {
     {
         _instance = new DbConnection("jdbc:mysql://localhost:3306/",
                 "root",
-                "hassina",
-                "CamServer");
+                "Resssay95",
+                "ServerCam");
     }
 
     public static DbConnection getInstance()

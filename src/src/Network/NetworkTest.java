@@ -19,7 +19,8 @@ public class NetworkTest {
         FrameReceiver frameReceiver = new FrameReceiver(new Server());
         frameReceiver.initFrameReceiver(new FrameReceiver.OnFrameReceived() {
             @Override
-            public void onFrameReceived(NetworkFrame networkFrame) {
+            public void onFrameReceived(NetworkFrame networkFrame, NounouFrame nounouFrame)
+            {
                 System.out.println("frame received from "+networkFrame.getFrame().getIp());
             }
         });
