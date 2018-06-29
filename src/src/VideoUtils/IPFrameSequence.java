@@ -45,7 +45,7 @@ public class IPFrameSequence extends FrameSequence
         for (ReceivedFrame frame : frames)
         {
             String frameUrl = frame.getFrameUrl();
-            frameUrl=frameUrl.replaceFirst("./CamSpotServer","./");
+//            frameUrl=frameUrl.replaceFirst("./CamSpotServer","./");
             if(from <= frame.getTimeStamp().getTime()
                     && frame.getTimeStamp().getTime() <= to)
             {

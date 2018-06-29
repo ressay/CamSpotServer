@@ -3,27 +3,27 @@ package UI;
 import Database.DbManager;
 import Database.Tables.ReceivedFrame;
 import Database.Tables.SpottedAnomaly;
-import Network.*;
+import Network.AnomalyPredictor;
+import Network.FrameStorer;
+import Network.NetworkFrame;
 import VideoUtils.FrameSequence;
 import VideoUtils.IPFrameSequence;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
-import org.json.simple.JSONObject;
 
-import java.io.*;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -147,16 +147,27 @@ public class Controller {
     public void loadAnomalies()
     {
         ArrayList<SpottedAnomaly> anomalies = SpottedAnomaly.getAnomalies();
+        this.anomaly_description.getItems().addAll(anomalies);
         ArrayList<ReceivedIP> rIps = new ArrayList<>();
-        for(SpottedAnomaly anomaly : anomalies)
-        {
-            rIps.add(new ReceivedIP(anomaly.sequence(),anomaly.getFrames_cool().getIp(),null));
+        for(SpottedAnomaly anomaly : anomalies) {
+            rIps.add(new ReceivedIP(anomaly.sequence(), anomaly.getFrames_cool().getIp(), null));
+            String lat = (String.valueOf(anomaly.getFrames_cool().getMetaData().getLat()));
+            String lon = (String.valueOf(anomaly.getFrames_cool().getMetaData().getLon()));
+            webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                if (newState == Worker.State.SUCCEEDED) {
+                    webEngine.executeScript("" + "window.lat = " + lat + ";" +
+                            "window.lon = " + lon + ";" + "document.addmarker(window.lat, window.lon);");
+                }
+            });
+
         }
+
 
         Table_anomaly.getItems().clear();
         Table_anomaly.getItems().addAll(rIps);
-//        ArrayLisst
-//        IP_Address_List.getItems().add(frame.getFrame());
+
+        this.anomaly_description.getItems().clear();
+        this.anomaly_description.getItems().addAll(SpottedAnomaly.getAnomalies());
     }
 
     public void loadIps()
@@ -176,8 +187,9 @@ public class Controller {
 //        IP_Address_List.getItems().add(frame.getFrame());
 
 
-
+        this.anomaly_description.getItems().clear();
         this.anomaly_description.getItems().addAll(SpottedAnomaly.getAnomalies());
+
     }
 
     /* methods */
@@ -195,6 +207,9 @@ public class Controller {
         //Collections.shuffle(setimage);
         imageIterator = setimage.iterator();
 
+
+        System.out.println("nb image: selected ip"+ipR.GetImages().size());
+
         this.setFrameSlider(frameSlider,setimage.size(),1,1);
 
 
@@ -209,6 +224,15 @@ public class Controller {
                             if(imageIterator.hasNext())
                             {   centerImage();
                                  Image i=imageIterator.next();
+                                 for (int j=0; j<50; j++)
+
+                                 {
+                                   frameSlider.increment();
+
+
+                                 }
+                                 frameSlider.increment();
+
                                 frame.setImage(i);
 
 
@@ -217,16 +241,10 @@ public class Controller {
 
                         }
                 ),
-                new KeyFrame(Duration.millis(100))
+                new KeyFrame(Duration.millis(10))
         );
         timeline.setCycleCount(setimage.size());
-        /*this part enable a looping on the same sequence of images ,"we don't need it now"*/
-        /*   timeline.setOnFinished(event -> {
-            Collections.shuffle(setimage);
-            imageIterator = setimage.iterator();
-            timeline.playFromStart();
-        });
-        */
+
         timeline.play();
 
 

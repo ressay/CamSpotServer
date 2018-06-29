@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -21,7 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
-<VBox prefHeight="527.0" prefWidth="663.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.Controller">
+<VBox prefHeight="527.0" prefWidth="663.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.Controller">
     <children>
         <MenuBar prefHeight="0.0" prefWidth="640.0" VBox.vgrow="NEVER">
             <menus>
@@ -65,25 +68,19 @@
                                             <items>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                                     <children>
-                                          <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="463.0" prefWidth="193.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <items>
-                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                                   <children>
-                                                                    <ListView fx:id="IP_Address_List" prefHeight="463.0" prefWidth="193.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                   </children>
-                                                </AnchorPane>
-                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                                   <children>
-                                                      <BorderPane prefHeight="200.0" prefWidth="200.0" />
-                                                                    <Label layoutX="38.0" layoutY="14.0" prefHeight="18.0" prefWidth="102.0" text="IP_Address">
-                                                         <font>
-                                                            <Font name="DejaVu Sans Bold" size="13.0" />
-                                                         </font>
-                                                      </Label>
-                                                   </children>
-                                                </AnchorPane>
-                                            </items>
-                                          </SplitPane>
+                                          <Accordion prefHeight="463.0" prefWidth="193.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <panes>
+                                              <TitledPane animated="false" text="IP_Address">
+                                                <content>
+                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                         <children>
+                                                                          <ListView fx:id="IP_Address_List" prefHeight="463.0" prefWidth="193.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                </content>
+                                              </TitledPane>
+                                            </panes>
+                                          </Accordion>
                                                     </children>
                                                 </AnchorPane>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -95,13 +92,13 @@
                                                    <children>
                                                       <BorderPane prefHeight="228.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                          <center>
-                                                            <ImageView fx:id="frame" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                                                            <ImageView fx:id="frame" fitHeight="158.0" fitWidth="306.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                                                                <image>
-                                                                  <Image url="@../VideoUtils/road.jpg" />
+                                                                  <Image url="@../VideoUtils/5cm.jpg" />
                                                                </image>
                                                             </ImageView>
                                                          </center>
-                                                         <top>
+                                                         <bottom>
                                                             <Slider fx:id="frameSlider" blockIncrement="0.3" majorTickUnit="1.0" max="3.0" maxHeight="-Infinity" minorTickCount="0" onMouseClicked="#ChangingSlide" onScroll="#ChangingSlide" prefHeight="24.0" prefWidth="264.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER">
                                                                <tooltip>
                                                                   <Tooltip fx:id="tooltip" text="Image slider (move to pass through images)">
@@ -111,39 +108,33 @@
                                                                   </Tooltip>
                                                                </tooltip>
                                                             </Slider>
-                                                         </top>
-                                                         <bottom>
-                                                            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                                                               <children>
-                                                                                      <Button fx:id="video_start" layoutX="115.0" layoutY="1.0" mnemonicParsing="false" onAction="#ButtonRestart" prefHeight="26.0" prefWidth="74.0" text="Restart">
-                                                                     <font>
-                                                                        <Font name="DejaVu Sans Condensed Bold" size="13.0" />
-                                                                     </font>
-                                                                  </Button>
-                                                                                      <Button fx:id="video_stop" layoutX="200.0" layoutY="1.0" mnemonicParsing="false" onAction="#ButtonStop" prefHeight="26.0" prefWidth="74.0" text="Stop">
-                                                                     <font>
-                                                                        <Font name="DejaVu Sans Condensed Bold" size="13.0" />
-                                                                     </font>
-                                                                  </Button>
-                                                                  <Button fx:id="video_pause" layoutX="282.0" layoutY="1.0" mnemonicParsing="false" onAction="#ButtonPause" prefHeight="26.0" prefWidth="74.0" text="Play">
-                                                                     <font>
-                                                                        <Font name="DejaVu Sans Condensed Bold" size="13.0" />
-                                                                     </font>
-                                                                  </Button>
-                                                               </children>
-                                                            </AnchorPane>
                                                          </bottom>
+                                                         <top>
+                                                            <MenuButton mnemonicParsing="false" prefHeight="26.0" prefWidth="205.0" text="VideoController" BorderPane.alignment="CENTER">
+                                                              <items>
+                                                                <MenuItem mnemonicParsing="false" onAction="#ButtonRestart" text="Stop" />
+                                                                <MenuItem mnemonicParsing="false" onAction="#ButtonRestart" text="Restart" />
+                                                                  <MenuItem mnemonicParsing="false" onAction="#ButtonPause" text="Play" />
+                                                              </items>
+                                                            </MenuButton>
+                                                         </top>
                                                       </BorderPane>
                                                    </children>
                                                 </AnchorPane>
                                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                                    <children>
-                                                                        <ListView fx:id="anomaly_description" layoutY="6.0" prefHeight="130.0" prefWidth="458.0" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="6.0" />
-                                                                        <Label layoutX="146.0" layoutY="141.0" text="Anomaly description">
-                                                         <font>
-                                                            <Font name="DejaVu Sans Bold" size="13.0" />
-                                                         </font>
-                                                      </Label>
+                                                      <BorderPane prefHeight="163.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <bottom>
+                                                                              <Label text="Anomaly description" BorderPane.alignment="CENTER">
+                                                               <font>
+                                                                  <Font name="DejaVu Sans Bold" size="13.0" />
+                                                               </font>
+                                                            </Label>
+                                                         </bottom>
+                                                         <center>
+                                                                              <ListView fx:id="anomaly_description" prefHeight="130.0" prefWidth="458.0" BorderPane.alignment="CENTER" />
+                                                         </center>
+                                                      </BorderPane>
                                                    </children>
                                                 </AnchorPane>
                                             </items>
@@ -164,7 +155,19 @@
                                 <items>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                        <children>
-                                          <ListView fx:id="Table_anomaly" onMouseClicked="#Display_anomaly_frame" prefHeight="463.0" prefWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                          <Accordion prefHeight="463.0" prefWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <panes>
+                                              <TitledPane animated="false" text="IP_address with ANOMALY">
+                                                <content>
+                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                         <children>
+                                                            <ListView fx:id="Table_anomaly" onMouseClicked="#Display_anomaly_frame" prefHeight="180.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                </content>
+                                              </TitledPane>
+                                            </panes>
+                                          </Accordion>
                                        </children>
                                     </AnchorPane>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -176,7 +179,13 @@
                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                          <children>
                                                             <BorderPane fx:id="frameslider2" prefHeight="430.0" prefWidth="433.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <center>
+                                                                  <ImageView fx:id="imageAnomaly" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+                                                               </center>
                                                                <bottom>
+                                                                  <Slider fx:id="slider2" onMouseClicked="#ChangingSlide" prefHeight="53.0" prefWidth="433.0" BorderPane.alignment="CENTER" />
+                                                               </bottom>
+                                                               <top>
                                                                   <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                                                     <buttons>
                                                                       <Button mnemonicParsing="false" onAction="#ButtonPause" text="Play" />
@@ -184,13 +193,7 @@
                                                                         <Button mnemonicParsing="false" onAction="#ButtonStop" text="Stop" />
                                                                     </buttons>
                                                                   </ButtonBar>
-                                                               </bottom>
-                                                               <top>
-                                                                  <Slider fx:id="slider2" onMouseClicked="#ChangingSlide" BorderPane.alignment="CENTER" />
                                                                </top>
-                                                               <center>
-                                                                  <ImageView fx:id="imageAnomaly" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
-                                                               </center>
                                                             </BorderPane>
                                                          </children></AnchorPane>
                                                 </content>
